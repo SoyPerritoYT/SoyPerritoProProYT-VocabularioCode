@@ -20,6 +20,7 @@ async function translate(){
   if(mode.value==="ai"){
     // Primero usamos el diccionario de Vocabulario Code.
     const localCode=reverseCode[v];
+    // El código de xd es exactamente `"€` (comillas + euro), todo junto.
     if(localCode){
       result.textContent="🤖 "+localCode;
       return;
