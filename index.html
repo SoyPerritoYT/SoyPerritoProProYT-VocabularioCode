@@ -16,6 +16,10 @@ const input=document.getElementById("input"),result=document.getElementById("res
 
 async function translate(){
   const v=input.value.trim();
+  if(v.toLowerCase()==="SoyPerritoProProYT".toLowerCase() || v.toLowerCase()==="soyperritoproproyt"){
+    result.textContent="🐶 SoyPerritoProProYT es un YouTuber con 36 subs y quiere llegar a los 50 subs. 🎯";
+    return;
+  }
   if(!v){result.textContent="Escribe algo primero 😎";return}
   if(mode.value==="ai"){
     // Primero usamos el diccionario de Vocabulario Code.
