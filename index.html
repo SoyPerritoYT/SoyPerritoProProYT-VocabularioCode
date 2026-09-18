@@ -5,59 +5,44 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SoyPerritoProProYT · Vocabulario Code</title>
 <style>
-:root{color-scheme:dark;--bg:#10131a;--card:#191e28;--accent:#7c5cff;--text:#f5f7ff;--muted:#aeb6c7}
+:root{color-scheme:dark;--card:#191e28;--accent:#7c5cff;--text:#f5f7ff;--muted:#aeb6c7}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:linear-gradient(135deg,#10131a,#171225);color:var(--text);min-height:100vh}
 main{max-width:760px;margin:auto;padding:28px 18px}.hero,.card{background:var(--card);border:1px solid #2b3242;border-radius:20px;padding:22px;margin-bottom:18px}
 h1{margin:0 0 8px;font-size:clamp(26px,6vw,42px)}h2{margin-top:0}.muted{color:var(--muted)}
-textarea,input{width:100%;background:#0d1016;color:var(--text);border:1px solid #343c4e;border-radius:12px;padding:14px;font:inherit}
-textarea{min-height:110px;resize:vertical}button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:white;margin:8px 6px 0 0}
-button.secondary{background:#30384a}.result{margin-top:14px;padding:16px;border-radius:12px;background:#0d1016;word-break:break-word;font-size:20px}
+textarea{width:100%;min-height:110px;resize:vertical;background:#0d1016;color:var(--text);border:1px solid #343c4e;border-radius:12px;padding:14px;font:inherit}
+button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:white;margin:8px 6px 0 0}.secondary{background:#30384a!important}
+.result{margin-top:14px;padding:16px;border-radius:12px;background:#0d1016;word-break:break-word;font-size:20px;min-height:28px}
 table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:9px;border-bottom:1px solid #303747}code{background:#0d1016;padding:3px 6px;border-radius:6px}
 </style>
 </head>
-<body>
-<main>
-<section class="hero">
-<h1>🐶 SoyPerritoProProYT-VocabularioCode</h1>
-<p class="muted">Tu traductor entre palabras normales y tu código secreto del teclado.</p>
-</section>
-
-<section class="card">
-<h2>🔤 Traductor</h2>
-<textarea id="normal" placeholder="Escribe una palabra o frase..."></textarea>
-<div>
-<button id="toCode">➡️ Normal → Código</button>
-<button id="toNormal" class="secondary">⬅️ Código → Normal</button>
-</div>
-<div id="result" class="result">Aquí aparecerá el resultado.</div>
-</section>
-
-<section class="card">
-<h2>📖 Diccionario aprendido</h2>
-<table><thead><tr><th>Normal</th><th>Código</th></tr></thead><tbody id="dict"></tbody></table>
-</section>
+<body><main>
+<section class="hero"><h1>🐶 SoyPerritoProProYT-VocabularioCode</h1><p class="muted">Traductor de tu código secreto del teclado.</p></section>
+<section class="card"><h2>🔤 Traductor</h2>
+<textarea id="input" placeholder="Escribe una palabra o código..."></textarea>
+<button id="toCode">➡️ Normal → Código</button><button id="toNormal" class="secondary">⬅️ Código → Normal</button>
+<div id="result" class="result" aria-live="polite">Aquí aparecerá el resultado.</div></section>
+<section class="card"><h2>📖 Diccionario aprendido</h2>
+<table><thead><tr><th>Normal</th><th>Código</th></tr></thead><tbody id="dict"></tbody></table></section>
 </main>
 <script>
 const words={
-  "hola":"-9)@",
-  "abc":"@;'",
-  "xd":""€",
-  "es":"3#",
-  "aprende":"@043!€3",
-  "pokemon go":"09(3?9! &9",
-  "sí":"#8",
-  "te odio":"53 9€89",
-  "te odio muchísimo":"53 9€89 ?7'-8#8?9",
-  "me compras mil pavos porfa":"?3 '9?94@# ?8) 0@:9# 094€@"
+"hola":"-9)@",
+"abc":"@;'",
+"xd":"\"€",
+"es":"3#",
+"aprende":"@043!€3",
+"pokemon go":"09(3?9! &9",
+"sí":"#8",
+"te odio":"53 9€89",
+"te odio muchísimo":"53 9€89 ?7'-8#8?9",
+"me compras mil pavos porfa":"?3 '9?94@# ?8) 0@:9# 094€@"
 };
-const codeToNormal=Object.fromEntries(Object.entries(words).map(([a,b])=>[b,a]));
-const normalEl=document.getElementById("normal"), result=document.getElementById("result"), dict=document.getElementById("dict");
+const input=document.getElementById("input"),result=document.getElementById("result"),dict=document.getElementById("dict");
+const reverse=Object.fromEntries(Object.entries(words).map(([normal,code])=>[code,normal]));
 function showDict(){dict.innerHTML=Object.entries(words).map(([a,b])=>'<tr><td>'+escapeHtml(a)+'</td><td><code>'+escapeHtml(b)+'</code></td></tr>').join("")}
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function translate(map){const raw=normalEl.value.trim();if(!raw){result.textContent="Escribe algo primero 😎";return}result.textContent=map[raw.toLowerCase()]||"Todavía no conozco esa frase 🔐"}
-document.getElementById("toCode").onclick=()=>translate(words);
-document.getElementById("toNormal").onclick=()=>translate(codeToNormal);
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function translate(map){const value=input.value.trim();result.textContent=value?(map[value.toLowerCase()]||"Todavía no conozco esa frase 🔐"):"Escribe algo primero 😎"}
+document.getElementById("toCode").addEventListener("click",()=>translate(words));
+document.getElementById("toNormal").addEventListener("click",()=>translate(reverse));
 showDict();
-</script>
-</body>
-</html>
+</script></body></html>
