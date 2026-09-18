@@ -18,9 +18,20 @@ async function translate(){
   const v=input.value.trim();
   if(!v){result.textContent="Escribe algo primero 😎";return}
   if(mode.value==="ai"){
+    // Primero usamos el diccionario de Vocabulario Code.
+    const localCode=reverseCode[v];
+    if(localCode){
+      result.textContent="🤖 "+localCode;
+      return;
+    }
+    const localSpanish=words[v.toLowerCase()];
+    if(localSpanish){
+      result.textContent="🤖 "+localSpanish;
+      return;
+    }
     result.textContent="🤖 Pensando...";
     try{
-      const response=await fetch("/api/translate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:v,target:"español"})});
+      const response=await fetch("/api/translate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:v,targetLanguage:"español"})});
       const data=await response.json();
       if(!response.ok) throw new Error(data.error||"Error de la IA");
       result.textContent="🤖 "+(data.translation||"No recibí una respuesta.");
