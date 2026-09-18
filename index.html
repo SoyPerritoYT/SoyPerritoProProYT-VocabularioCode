@@ -3,7 +3,7 @@
 <style>
 :root{color-scheme:dark;--card:#191e28;--accent:#7c5cff;--text:#f5f7ff;--muted:#aeb6c7}*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:linear-gradient(135deg,#10131a,#171225);color:var(--text);min-height:100vh}main{max-width:760px;margin:auto;padding:28px 18px}.card{background:var(--card);border:1px solid #2b3242;border-radius:20px;padding:22px}h1{margin:0 0 8px;font-size:clamp(26px,6vw,42px)}.muted{color:var(--muted)}select,textarea{width:100%;background:#0d1016;color:var(--text);border:1px solid #343c4e;border-radius:12px;padding:14px;font:inherit}select{margin:8px 0 12px}textarea{min-height:130px;resize:vertical}button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:white;margin:8px 6px 0 0}.result{margin-top:14px;padding:16px;border-radius:12px;background:#0d1016;word-break:break-word;font-size:20px;min-height:28px}.support{margin-top:18px;padding:16px;border-radius:12px;background:#11151e;border:1px solid #2b3242}.support a{color:#b7a8ff;text-decoration:none;font-weight:700;display:block;margin-top:6px}.examples{margin-top:22px;padding-top:18px;border-top:1px solid #2b3242}.examples strong{display:block;margin-bottom:8px}.code-line{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#d9d4ff;margin:5px 0;word-break:break-all}
 </style></head><body><main><section class="card"><h1>🐶 Vocabulario Code</h1><p class="muted">Traductor Español ↔ Code ↔ Japonés.</p>
-<select id="mode" aria-label="Modo de traducción"><option value="es-code">🇪🇸 Español → 🔐 Code</option><option value="code-es">🔐 Code → 🇪🇸 Español</option><option value="es-ja">🇪🇸 Español → 🇯🇵 Japonés</option><option value="ja-es">🇯🇵 Japonés → 🇪🇸 Español</option><option value="ai">🤖 IA traductora</option></select>
+<select id="mode" aria-label="Modo de traducción"><option value="es-code">🇪🇸 Español → 🔐 Code</option><option value="code-es">🔐 Code → 🇪🇸 Español</option><option value="es-ja">🇪🇸 Español → 🇯🇵 Japonés</option><option value="ja-es">🇯🇵 Japonés → 🇪🇸 Español</option><option value="ai">🤖 IA traductora</option><option value="ai-normal">🧠 IA normal</option></select>
 <textarea id="input" placeholder="Escribe aquí..."></textarea><button id="translate">🔄 Traducir</button><div id="result" class="result">Aquí aparecerá el resultado.</div>
 <div class="support"><strong>🛠️ Soporte</strong><a href="mailto:perritosoporte@outlook.com">perritosoporte@outlook.com</a><strong>🐶 Correo para subs</strong><a href="mailto:perritosubsexculusivo@outlook.com">perritosubsexculusivo@outlook.com</a></div>
 <div class="examples"><strong>💡 Códigos disponibles:</strong><div id="examplesList"></div></div></section></main>
@@ -21,6 +21,18 @@ async function translate(){
     return;
   }
   if(!v){result.textContent="Escribe algo primero 😎";return}
+  if(mode.value==="ai-normal"){
+    result.textContent="🧠 Pensando...";
+    try{
+      const response=await fetch("/api/translate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:v,targetLanguage:"español"})});
+      const data=await response.json();
+      if(!response.ok) throw new Error(data.error||"Error de la IA");
+      result.textContent="🧠 "+(data.translation||"No recibí una respuesta.");
+    }catch(error){
+      result.textContent="❌ "+error.message;
+    }
+    return;
+  }
   if(mode.value==="ai"){
     // Primero usamos el diccionario de Vocabulario Code.
     const localCode=reverseCode[v];
