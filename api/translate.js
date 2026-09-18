@@ -20,20 +20,18 @@ export default async function handler(req, res) {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      "https://generativelanguage.googleapis.com/v1beta/interactions",
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Traduce el siguiente texto de vocabulario de programación al ${targetLanguage || "español"}, manteniendo el contexto técnico. Responde solo con la traducción:
+          model: "gemini-3.6-flash",
+          input: `Traduce el siguiente texto de vocabulario de programación al ${targetLanguage || "español"}, manteniendo el contexto técnico. Responde solo con la traducción:
 
 "${text}"`
-            }]
-          }]
         })
       }
     );
@@ -46,8 +44,11 @@ export default async function handler(req, res) {
       });
     }
 
-    const translation =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const translation = data?.steps
+      ?.filter(step => step.type === "model_output")
+      ?.flatMap(step => step.content || [])
+      ?.find(content => content.type === "text")
+      ?.text;
 
     if (!translation) {
       return res.status(500).json({
@@ -58,9 +59,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ translation });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
-      error: "Error al traducir con Gemini"
+      error: error.message || "Error al traducir con Gemini"
     });
   }
 }
